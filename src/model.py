@@ -67,14 +67,15 @@ class BERTBaseUncased(pl.LightningModule):
         outputs = torch.sigmoid(outputs).detach().cpu().numpy()
         outputs = np.array(outputs) >= 0.5
         targets = targets.detach().cpu().numpy()
-        accuracy = metrics.accuracy_score(targets,outputs)
+        accuracy = metrics.accuracy_score(targets, outputs)
         accuracy = torch.tensor(accuracy)
         print(f"accuracy: {accuracy}")
         return {'loss': loss, 'accuracy': accuracy}
 
     def validation_epoch_end(self, val_step_outputs):
         avg_loss = torch.stack([x['loss'] for x in val_step_outputs]).mean()
-        avg_accuracy = torch.stack([x['accuracy'] for x in val_step_outputs]).mean()
+        avg_accuracy = torch.stack([x['accuracy']
+                                    for x in val_step_outputs]).mean()
         tensorboard_logs = {'val_loss': avg_loss, 'avg_val_acc': avg_accuracy}
         return {'loss': avg_loss, 'progress_bar': tensorboard_logs}
 
